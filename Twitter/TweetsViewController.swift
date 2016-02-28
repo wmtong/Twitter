@@ -32,6 +32,11 @@ class TweetsViewController: UIViewController, UITableViewDelegate,UITableViewDat
         refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)
         
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "profileDetailSegue:", name: "profileDetailNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "replySegue:", name: "replyNotification", object: nil)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateTweets:", name: "newTweet", object: nil)
+        
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -84,6 +89,40 @@ class TweetsViewController: UIViewController, UITableViewDelegate,UITableViewDat
                 isMoreDataLoading = true
                 
                 loadMoreData()
+            }
+        }
+    }
+    
+    func updateTweets(notification: NSNotification) {
+        let newTweet = notification.userInfo!["new_tweet"] as! Tweet
+        tweets?.insert(newTweet, atIndex: 0)
+        tableView.reloadData()
+    }
+    
+    func profileDetailSegue(notification: NSNotification) {
+        performSegueWithIdentifier("profileSegue", sender: notification.userInfo!["user"])
+    }
+    
+    func replySegue(notification: NSNotification) {
+        performSegueWithIdentifier("tweetSegue", sender: notification.userInfo!["reply_tweet"])
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "detailSegue" {
+            let cell = sender as! UITableViewCell
+            let indexPath = tableView.indexPathForCell(cell)
+            let tweet = tweets![indexPath!.row]
+            let tweetDetailViewController = segue.destinationViewController as! DetailsViewController
+            print("details")
+            tweetDetailViewController.tweet = tweet
+        } else if segue.identifier == "profileSegue" {
+            let user = sender as! User
+            let profileDetailViewController = segue.destinationViewController as! ProfileViewController
+            profileDetailViewController.user = user
+        } else if segue.identifier == "tweetSegue" {
+            if let replyTweet = sender as? Tweet {
+                let composeViewController = segue.destinationViewController as! NewTweetViewController
+                composeViewController.reply = replyTweet
             }
         }
     }

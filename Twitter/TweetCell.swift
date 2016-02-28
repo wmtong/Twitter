@@ -80,6 +80,14 @@ class TweetCell: UITableViewCell {
         }
     }
     
+    func profileSegue() {
+        NSNotificationCenter.defaultCenter().postNotificationName("profileDetailNotification", object: nil, userInfo: ["user" : tweet.user!])
+    }
+    
+    func replySegue() {
+        NSNotificationCenter.defaultCenter().postNotificationName("replyNotification", object: nil, userInfo: ["reply_tweet" : tweet])
+    }
+    
     func retweet() {
         if (tweet.isRetweeted != nil && !tweet.isRetweeted! && tweet.user!.name != user!.name) {
             TwitterClient.sharedInstance.retweet(tweet.id!, completion: { (tweet, error) -> () in
@@ -127,6 +135,19 @@ class TweetCell: UITableViewCell {
         
         proPic.layer.cornerRadius = 8.0
         proPic.clipsToBounds = true
+       
+        tapProfileDetail.addTarget(self, action: "profileSegue")
+        proPic.addGestureRecognizer(tapProfileDetail)
+        proPic.userInteractionEnabled = true
+        
+        tapReply.addTarget(self, action: "replySegue")
+        replyImage.addGestureRecognizer(tapReply)
+        replyImage.userInteractionEnabled = true
+       /*
+        tapReply.addTarget(self, action: "reply")
+        replyImage.addGestureRecognizer(tapReply)
+        replyImage.userInteractionEnabled = true
+      */  
         tapRetweet.addTarget(self, action: "retweet")
         retweetImage.addGestureRecognizer(tapRetweet)
         retweetImage.userInteractionEnabled = true
@@ -135,8 +156,9 @@ class TweetCell: UITableViewCell {
         likeImage.addGestureRecognizer(tapFavorite)
         likeImage.userInteractionEnabled = true
         
+        //TweetCell.selectionStyle = UITableViewCellSelectionStyleNone
+        
     }
-
     
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
