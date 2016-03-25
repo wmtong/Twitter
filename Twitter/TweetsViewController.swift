@@ -34,11 +34,15 @@ class TweetsViewController: UIViewController, UITableViewDelegate,UITableViewDat
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "profileDetailSegue:", name: "profileDetailNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "replySegue:", name: "replyNotification", object: nil)
-        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateTweets:", name: "newTweet", object: nil)
-        
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        imageView.contentMode = .ScaleAspectFit
+        let image = UIImage(named: "twitterlogo")
+        imageView.image = image
+        self.navigationItem.titleView = imageView
     }
     
+    //tableView methods
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tweets != nil {
             return tweets!.count
@@ -54,6 +58,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate,UITableViewDat
         return cell
     }
     
+    //refresh control and infinite scroll methods
     func refreshControlAction(refreshControl: UIRefreshControl) {
         TwitterClient.sharedInstance.homeTimelineWithParams(nil, completion: { (tweets, error) -> () in
             print("reloading data")
@@ -99,6 +104,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate,UITableViewDat
         tableView.reloadData()
     }
     
+    //segue methods
     func profileDetailSegue(notification: NSNotification) {
         performSegueWithIdentifier("profileSegue", sender: notification.userInfo!["user"])
     }
@@ -117,6 +123,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate,UITableViewDat
             tweetDetailViewController.tweet = tweet
         } else if segue.identifier == "profileSegue" {
             let user = sender as! User
+            print(user.screenname)
             let profileDetailViewController = segue.destinationViewController as! ProfileViewController
             profileDetailViewController.user = user
         } else if segue.identifier == "tweetSegue" {
@@ -133,6 +140,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate,UITableViewDat
         // Dispose of any resources that can be recreated.
     }
     
+    //logout
     @IBAction func onLogout(sender: AnyObject) {
         User.currentUser?.logout()
     }

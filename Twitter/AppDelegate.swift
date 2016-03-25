@@ -27,6 +27,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             let vc = storyboard.instantiateViewControllerWithIdentifier("NavigationController") as! UINavigationController
             window?.rootViewController = vc
+            //vc.viewDidLoad()
+            UINavigationBar.appearance().barTintColor = UIColor(red: 0/255, green: 172.0/255, blue: 237.0/255, alpha: 1.0)
+            UINavigationBar.appearance().tintColor = UIColor.whiteColor()
+            //UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
+            let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+            imageView.contentMode = .ScaleAspectFit
+            let image = UIImage(named: "like")
+            imageView.image = image
+            vc.navigationItem.titleView = imageView
         }
         return true
     }

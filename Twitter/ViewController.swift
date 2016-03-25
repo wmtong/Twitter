@@ -32,6 +32,10 @@ class ViewController: UIViewController {
                 self.performSegueWithIdentifier("loginSegue", sender: self)
             }else{
                 //handle login error
+                let alertController = UIAlertController(title: "Cannot Login", message: "Invalid Username or Password", preferredStyle: .Alert)
+                let defaultAction = UIAlertAction(title: "OK", style: .Default, handler: nil)
+                alertController.addAction(defaultAction)
+                self.presentViewController(alertController, animated: true, completion: nil)
             }
         }
             

@@ -26,6 +26,7 @@ class User: NSObject {
     var numFollowers: Int?
     var numFollowing: Int?
     var dictionary: NSDictionary
+    var tweets: [Tweet]?
     
     init(dictionary: NSDictionary){
         self.dictionary = dictionary
@@ -40,6 +41,7 @@ class User: NSObject {
         numTweets = dictionary["statuses_count"] as? Int
         numFollowers = dictionary["followers_count"] as? Int
         numFollowing = dictionary["friends_count"] as? Int
+        tweets = dictionary["user_timeline"] as? [Tweet]
     }
     
     func logout(){

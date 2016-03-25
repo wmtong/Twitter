@@ -46,7 +46,7 @@ class Tweet: NSObject {
         
         for dictionary in array {
             tweets.append(Tweet(dictionary: dictionary))
-            print((dictionary: dictionary))
+            //print((dictionary: dictionary))
         }
         
         return tweets

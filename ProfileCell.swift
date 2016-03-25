@@ -9,7 +9,7 @@
 import UIKit
 import BDBOAuth1Manager
 
-class TweetCell: UITableViewCell {
+class ProfileCell: UITableViewCell {
     
     @IBOutlet weak var proPic: UIImageView!
     @IBOutlet weak var name: UILabel!
@@ -24,7 +24,7 @@ class TweetCell: UITableViewCell {
     @IBOutlet weak var retweetCount: UILabel!
     @IBOutlet weak var likeCount: UILabel!
     
-    let user = User.currentUser
+    var user: User!
     
     let tapProfileDetail = UITapGestureRecognizer()
     let tapReply = UITapGestureRecognizer()
@@ -33,6 +33,7 @@ class TweetCell: UITableViewCell {
     
     var tweet: Tweet! {
         didSet{
+            
             proPic.setImageWithURL(NSURL(string: (tweet.user!.profileImageURL)!)!)
             print(tweet.user!.profileImageURL)
             name.text = tweet.user?.name
@@ -46,7 +47,6 @@ class TweetCell: UITableViewCell {
             tweetText.text = tweet.text
             
             retweetCount.text = String(tweet.retweets!)
-            
             if tweet.retweets > 0 {
                 retweetCount.hidden = false
             } else {
@@ -75,13 +75,19 @@ class TweetCell: UITableViewCell {
                 likeImage.image = UIImage(named: "like")
                 likeCount.textColor = UIColor.grayColor()
             }
-
-
+            
+            
         }
     }
     
+    func profileSegue() {
+        NSNotificationCenter.defaultCenter().postNotificationName("profileDetailNotification", object: nil, userInfo: ["user" : tweet.user!])
+    }
     
-    //twitter methods
+    func replySegue() {
+        NSNotificationCenter.defaultCenter().postNotificationName("replyNotification", object: nil, userInfo: ["reply_tweet" : tweet])
+    }
+    
     func retweet() {
         if (tweet.isRetweeted != nil && !tweet.isRetweeted! && tweet.user!.name != user!.name) {
             TwitterClient.sharedInstance.retweet(tweet.id!, completion: { (tweet, error) -> () in
@@ -119,16 +125,6 @@ class TweetCell: UITableViewCell {
         }
     }
     
-    //segue methods
-    
-    func profileSegue() {
-        NSNotificationCenter.defaultCenter().postNotificationName("profileDetailNotification", object: nil, userInfo: ["user" : tweet.user!])
-    }
-    
-    func replySegue() {
-        NSNotificationCenter.defaultCenter().postNotificationName("replyNotification", object: nil, userInfo: ["reply_tweet" : tweet])
-    }
-
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -139,7 +135,7 @@ class TweetCell: UITableViewCell {
         
         proPic.layer.cornerRadius = 8.0
         proPic.clipsToBounds = true
-       
+        
         tapProfileDetail.addTarget(self, action: "profileSegue")
         proPic.addGestureRecognizer(tapProfileDetail)
         proPic.userInteractionEnabled = true
@@ -147,7 +143,11 @@ class TweetCell: UITableViewCell {
         tapReply.addTarget(self, action: "replySegue")
         replyImage.addGestureRecognizer(tapReply)
         replyImage.userInteractionEnabled = true
-       
+        
+        tapReply.addTarget(self, action: "reply")
+        replyImage.addGestureRecognizer(tapReply)
+        replyImage.userInteractionEnabled = true
+
         tapRetweet.addTarget(self, action: "retweet")
         retweetImage.addGestureRecognizer(tapRetweet)
         retweetImage.userInteractionEnabled = true
@@ -155,6 +155,9 @@ class TweetCell: UITableViewCell {
         tapFavorite.addTarget(self, action: "like")
         likeImage.addGestureRecognizer(tapFavorite)
         likeImage.userInteractionEnabled = true
+        
+        //TweetCell.selectionStyle = UITableViewCellSelectionStyleNone
+        
     }
     
     override func setSelected(selected: Bool, animated: Bool) {
