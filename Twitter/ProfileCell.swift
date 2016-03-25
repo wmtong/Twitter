@@ -147,7 +147,7 @@ class ProfileCell: UITableViewCell {
         tapReply.addTarget(self, action: "reply")
         replyImage.addGestureRecognizer(tapReply)
         replyImage.userInteractionEnabled = true
-
+        
         tapRetweet.addTarget(self, action: "retweet")
         retweetImage.addGestureRecognizer(tapRetweet)
         retweetImage.userInteractionEnabled = true
